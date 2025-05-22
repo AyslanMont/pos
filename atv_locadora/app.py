@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi import HTTPException
 from fastapi import status
 from models import Car, Rent, Client
-from typing import List, Dict
+from typing import List
 
 
 app = FastAPI()
@@ -25,7 +25,8 @@ def post_carro(carro: Car):
         carros.append(carro)
         return carro
     else:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail="Esse carro já está cadastrado!")
 
 
 @app.put("/carros/{id_carro}", response_model=Car)
@@ -36,17 +37,19 @@ def put_carro(id_carro: int, carro_atualizado: Car):
             carros[index] = carro_atualizado
             return carro_atualizado
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Carro não encontrado!")
 
 
 @app.delete("/carros/{id_carro}", response_model=Car)
-def del_carro(id_carro: int):
+def delete_carro(id_carro: int):
     for index, carro in enumerate(carros):
         if id_carro == carro.id:
             carro_del = carros.pop(index)
             return carro_del
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Carro não encontrado!")
 
 
 @app.get("/carros/disponiveis", response_model=List[Car])
@@ -71,7 +74,7 @@ def post_cliente(cliente: Client):
         carros.append(cliente)
         return cliente
     else:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Este cliente já está cadastrado!")
 
 
 @app.get("/clientes/{id_cliente}", response_model=Client)
@@ -80,7 +83,7 @@ def get_cliente(id_cliente: int):
         cliente = clientes[id_cliente]
         return cliente
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado!")
 
 
 @app.get("/reservas/", response_model=List[Rent])
@@ -98,14 +101,14 @@ def post_reservas(reserva: Rent):
         carro.disponivel = False
         return reserva
     else:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Esta reserva já foi feita!")
 
 
 @app.delete("/reservas/{id_reserva}", response_model=Rent)
-def del_carro(id_reserva: int):
+def delete_reserva(id_reserva: int):
     for index, reserva in enumerate(reservas):
         if id_reserva == reserva.id:
             reserva_del = reservas.pop(index)
             return reserva_del
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reserva não encontrada!")
