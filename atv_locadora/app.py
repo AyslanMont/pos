@@ -71,19 +71,21 @@ def post_cliente(cliente: Client):
     id_cliente = len(clientes) + 1
     if not cliente in clientes:
         cliente.id = id_cliente
-        carros.append(cliente)
+        clientes.append(cliente)
         return cliente
     else:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Este cliente já está cadastrado!")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail="Este cliente já está cadastrado!")
 
 
 @app.get("/clientes/{id_cliente}", response_model=Client)
 def get_cliente(id_cliente: int):
-    if clientes[id_cliente]:
-        cliente = clientes[id_cliente]
-        return cliente
+    for cliente in clientes:
+        if cliente.id == id_cliente:
+            return cliente
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado!")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Cliente não encontrado!")
 
 
 @app.get("/reservas/", response_model=List[Rent])
@@ -94,21 +96,37 @@ def get_reservas():
 @app.post("/reservas/", response_model=Rent, status_code=status.HTTP_201_CREATED)
 def post_reservas(reserva: Rent):
     id_reserva = len(reservas) + 1
-    if not reserva in reservas and carros[reserva.id_carro]:
-        reserva.id = id_reserva
-        reservas.append(reserva)
-        carro = carros[reserva.id_carro]
-        carro.disponivel = False
-        return reserva
-    else:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Esta reserva já foi feita!")
+    if reserva in reservas:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail="Esta reserva já foi feita!")
+
+    carro_encontrado = None
+    for carro in carros:
+        if carro.id == reserva.id_carro:
+            carro_encontrado = carro
+            break
+
+    if carro_encontrado is None:
+        raise HTTPException(status_code=404, detail="Carro não encontrado!")
+
+    if not carro_encontrado.disponivel:
+        raise HTTPException(status_code=409, detail="Carro indisponível!")
+
+    reserva.id = id_reserva
+    reservas.append(reserva)
+    carro_encontrado.disponivel = False
+    return reserva
 
 
 @app.delete("/reservas/{id_reserva}", response_model=Rent)
 def delete_reserva(id_reserva: int):
     for index, reserva in enumerate(reservas):
         if id_reserva == reserva.id:
+            for carro in carros:
+                if carro.id == reserva.id_carro:
+                    carro.disponivel = True
             reserva_del = reservas.pop(index)
             return reserva_del
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reserva não encontrada!")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Reserva não encontrada!")
