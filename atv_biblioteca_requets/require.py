@@ -11,7 +11,8 @@ if __name__ == "__main__":
         2 - Pesquisa livro por título
         3 - Cadastrar um livro
         4 - Deletar um livro
-        5 - Sair
+        5 - Editar um livro
+        6 - Sair
         """))
 
         match opcao:
@@ -40,4 +41,19 @@ if __name__ == "__main__":
                 response = requests.delete(f"{url}/livros/{titulo}")
                 print(f"{response.text} --------- status:{response.status_code}")
             case 5:
+                titulo = input("Digite o título do livro a ser alterado: ")
+                titulo_novo = input("Digite o novo título do livro: ")
+                ano = int(input("Digite o novo ano do livro: "))
+                edicao = int(input("Digite a nova edição do livro: "))
+
+                livro = {
+                    "titulo": titulo_novo,
+                    "ano": ano,
+                    "edicao": edicao
+                }
+
+                response = requests.put(f"{url}/livros/{titulo}", json=livro)
+                print(f"{response.text} --------- status:{response.status_code}")
+
+            case 6:
                 break
