@@ -1,0 +1,20 @@
+[project]
+name = "atv-biblioteca-requets"
+version = "0.1.0"
+description = "Atividade prática de requisições de API"
+authors = [
+    {name = "Ayslan Francisco Monteiro Neto",email = "ayslanfrancisco999@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests (>=2.32.4,<3.0.0)",
+    "uvicorn (>=0.34.3,<0.35.0)",
+    "fastapi (>=0.115.13,<0.116.0)",
+    "pydantic (>=2.11.7,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
