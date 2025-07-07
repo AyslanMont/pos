@@ -19,6 +19,7 @@ class Biblioteca(BaseModel):
     nome: str
     acervo: List[Livro]
     usuario: List[Usuario]
+    
 
 
 class Emprestimo(BaseModel):
